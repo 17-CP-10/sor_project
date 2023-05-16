@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../data/assets_path.dart';
+import '../home_screen/home_screen.dart';
 
 class ProjectSelectionScreen extends StatefulWidget {
   const ProjectSelectionScreen({super.key});
@@ -88,7 +89,12 @@ class _ProjectSelectionScreenState extends State<ProjectSelectionScreen> {
                           ],
                         ),
                         trailing: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (_) {
+                              return HomeScreen();
+                            }));
+                          },
                           child: const FaIcon(
                             FontAwesomeIcons.arrowRight,
                             color: Colors.black,
