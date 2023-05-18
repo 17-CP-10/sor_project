@@ -3,9 +3,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:spotonresponse/view/screens/authentication/auth_screen.dart';
 
 import '../../../data/assets_path.dart';
 import '../incident/incident_list.dart';
+import '../status_map/status_map.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,12 +18,81 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void _openDrawer() {
+    _scaffoldKey.currentState?.openDrawer();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
+        appBar: AppBar(
+          foregroundColor: Colors.grey,
+          title: Text(
+            "Home",
+            style: TextStyle(color: Colors.grey),
+          ),
+          backgroundColor: Colors.white,
+        ),
+        key: _scaffoldKey,
+        drawer: Drawer(
+          width: 250.w,
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 8.w),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                ListTile(
+                  trailing: FaIcon(
+                    FontAwesomeIcons.xmark,
+                    color: Colors.black,
+                  ),
+                  title: Text(
+                    'Close',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
+                  onTap: () {
+                    _scaffoldKey.currentState?.closeDrawer();
+                  },
+                ),
+                ListTile(
+                  trailing: FaIcon(
+                    FontAwesomeIcons.fileCircleCheck,
+                    color: Colors.black,
+                  ),
+                  title: Text(
+                    'Change Project ',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
+                  onTap: () {
+                    // Handle item 2 tap
+                  },
+                ),
+                ListTile(
+                  trailing: FaIcon(
+                    FontAwesomeIcons.rightFromBracket,
+                    color: Colors.black,
+                  ),
+                  title: Text(
+                    'Logout ',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
+                  onTap: () {
+                    // Handle item 2 tap
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return AuthScreen();
+                    }));
+                  },
+                ),
+                // Add more ListTiles for additional items
+              ],
+            ),
+          ),
+        ),
         body: Column(children: [
           Image.asset(
             ImagesPath.sorIcon,
@@ -42,7 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 18.sp, color: Colors.black),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      _openDrawer();
+                    },
                     child: Container(
                       height: 40.h,
                       width: 40.w,
@@ -65,6 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               setState(() {
                 selectedIndex = 0;
+                Navigator.push(context, MaterialPageRoute(builder: (_) {
+                  return StatusMapScreen();
+                }));
               });
             },
             child: Container(

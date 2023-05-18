@@ -19,6 +19,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          foregroundColor: Colors.grey,
+          title: Text(
+            "Forgot Password",
+            style: TextStyle(color: Colors.grey),
+          ),
+          backgroundColor: Colors.white,
+        ),
         backgroundColor: Colors.grey.shade100,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,

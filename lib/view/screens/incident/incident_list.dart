@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../data/assets_path.dart';
 import '../home_screen/home_screen.dart';
+import 'incident_details.dart';
 
 class IncidentList extends StatefulWidget {
   const IncidentList({super.key});
@@ -22,6 +23,14 @@ class _IncidentListState extends State<IncidentList> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
+        appBar: AppBar(
+          foregroundColor: Colors.grey,
+          title: Text(
+            "Project ID : 127",
+            style: TextStyle(color: Colors.grey),
+          ),
+          backgroundColor: Colors.white,
+        ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +153,7 @@ class _IncidentListState extends State<IncidentList> {
                             onTap: () {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (_) {
-                                return HomeScreen();
+                                return IncidentDetails();
                               }));
                             },
                             child: FaIcon(

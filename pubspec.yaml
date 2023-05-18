@@ -38,6 +38,7 @@ dependencies:
   flutter_screenutil:
   font_awesome_flutter: ^10.4.0
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
