@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../data/assets_path.dart';
+import '../authentication/auth_functionality.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -104,7 +105,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     height: 30.h,
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      if (emailController.text.isNotEmpty) {
+                        AuthFunctionality.resetPassword(
+                            context, emailController.text.trim());
+                      }
+                    },
                     child: Container(
                       padding: EdgeInsets.symmetric(
                           horizontal: 40.w, vertical: 10.h),

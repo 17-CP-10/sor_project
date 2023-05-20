@@ -1,11 +1,13 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:spotonresponse/data/assets_path.dart';
+import 'package:spotonresponse/view/screens/authentication/auth_functionality.dart';
 import 'package:spotonresponse/view/screens/project_selection/project_selection_screen.dart';
 
 import '../forgot_password/forgot_password.dart';
@@ -20,6 +22,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   bool isLogin = true;
   bool isPassowordVisible = false;
+  bool isLoading = false;
   TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -251,11 +254,50 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ),
                       InkWell(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) {
-                            return ProjectSelectionScreen();
-                          }));
+                        onTap: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          if (emailController.text.isNotEmpty &&
+                              passwordController.text.isNotEmpty) {
+                            if (isLogin && nameController.text.isEmpty) {
+                              isLoading = await AuthFunctionality.loginUser(
+                                      context,
+                                      emailController.text.trim(),
+                                      passwordController.text.trim())
+                                  .then((value) {
+                                return false;
+                              });
+                              setState(() {});
+                            } else {
+                              await AuthFunctionality.registerUser(
+                                      context,
+                                      emailController.text.trim(),
+                                      passwordController.text.trim())
+                                  .then((value) {
+                                if (value != null) {
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .add({
+                                    "uid": value.user?.uid ?? "",
+                                    "name": nameController.text,
+                                    "email": emailController.text.trim(),
+                                  }).whenComplete(() {
+                                    isLoading = false;
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (_) {
+                                      return const ProjectSelectionScreen();
+                                    }));
+                                  });
+                                }
+                              });
+                              setState(() {});
+                            }
+                          } else {
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
@@ -264,11 +306,18 @@ class _AuthScreenState extends State<AuthScreen> {
                           decoration: BoxDecoration(
                               color: Colors.blueGrey,
                               borderRadius: BorderRadius.circular(12.r)),
-                          child: Text(
-                            isLogin ? "Login" : "Register",
-                            style:
-                                TextStyle(fontSize: 18.sp, color: Colors.white),
-                          ),
+                          child: isLoading
+                              ? SizedBox(
+                                  height: 20.h,
+                                  width: 20.w,
+                                  child: const CircularProgressIndicator(
+                                    color: Colors.black,
+                                  ))
+                              : Text(
+                                  isLogin ? "Login" : "Register",
+                                  style: TextStyle(
+                                      fontSize: 18.sp, color: Colors.white),
+                                ),
                         ),
                       )
                     ],

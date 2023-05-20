@@ -37,6 +37,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_screenutil:
   font_awesome_flutter: ^10.4.0
+  firebase_auth: ^4.6.1
+  firebase_core: ^2.13.0
+  shared_preferences: ^2.1.1
+  cloud_firestore: ^4.7.1
 
 
 dev_dependencies:
