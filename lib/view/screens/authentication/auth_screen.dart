@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'dart:developer' as developer;
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -328,25 +329,62 @@ class _AuthScreenState extends State<AuthScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircleAvatar(
-                        radius: 24.r,
-                        backgroundColor: Colors.white,
-                        child: FaIcon(
-                          FontAwesomeIcons.google,
-                          color: Colors.black,
-                          size: 26.r,
+                      InkWell(
+                        onTap: () async {
+                          await AuthFunctionality.signInWithGoogle()
+                              .then((value) {
+                            try {
+                              if (value.additionalUserInfo?.isNewUser == true) {
+                                FirebaseFirestore.instance
+                                    .collection("users")
+                                    .add({
+                                  "uid": value.user?.uid ?? "",
+                                  "name": value.user?.displayName ?? "",
+                                  "email": value.user?.email ?? "",
+                                }).whenComplete(() {
+                                  isLoading = false;
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (_) {
+                                    return const ProjectSelectionScreen();
+                                  }));
+                                });
+                              } else {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) {
+                                  return const ProjectSelectionScreen();
+                                }));
+                              }
+                            } catch (e) {
+                              developer.log(e.toString());
+                            }
+                          });
+                          setState(() {});
+                        },
+                        child: CircleAvatar(
+                          radius: 24.r,
+                          backgroundColor: Colors.white,
+                          child: FaIcon(
+                            FontAwesomeIcons.google,
+                            color: Colors.black,
+                            size: 26.r,
+                          ),
                         ),
                       ),
                       SizedBox(
                         width: 30.w,
                       ),
-                      CircleAvatar(
-                        radius: 24.r,
-                        backgroundColor: Colors.white,
-                        child: FaIcon(
-                          FontAwesomeIcons.facebookF,
-                          color: Colors.black,
-                          size: 26.r,
+                      InkWell(
+                        onTap: () async {
+                          await AuthFunctionality.signInWithFacebook();
+                        },
+                        child: CircleAvatar(
+                          radius: 24.r,
+                          backgroundColor: Colors.white,
+                          child: FaIcon(
+                            FontAwesomeIcons.facebookF,
+                            color: Colors.black,
+                            size: 26.r,
+                          ),
                         ),
                       ),
                     ],

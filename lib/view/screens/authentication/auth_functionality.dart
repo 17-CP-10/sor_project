@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:spotonresponse/main.dart';
 
 import '../../widgets/snack_bar.dart';
 import '../project_selection/project_selection_screen.dart';
@@ -7,6 +10,7 @@ import 'auth_screen.dart';
 
 class AuthFunctionality {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   static Future<UserCredential?> registerUser(
       BuildContext context, String email, String password) async {
@@ -17,6 +21,7 @@ class AuthFunctionality {
         password: password,
       );
       // Registration successful, you can perform additional tasks or navigate to a new screen.
+      prefs?.setString("auth", userCredential.user?.uid ?? "");
       SnackBarHelper.showSnackBar(
           context, 'Registration successful: ${userCredential.user!.uid}');
       print('Registration successful: ${userCredential.user!.uid}');
@@ -40,6 +45,32 @@ class AuthFunctionality {
     }
   }
 
+  static Future<UserCredential> signInWithGoogle() async {
+    // Trigger the Google Sign-In flow.
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+    // Obtain the auth details from the request.
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential.
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Sign in to Firebase with the Google credential.
+    final UserCredential userCredential =
+        await _auth.signInWithCredential(credential);
+    prefs?.setString("auth", userCredential.user?.uid ?? "");
+    return userCredential;
+  }
+
+  void signOutGoogle() async {
+    await _googleSignIn.signOut();
+    print("User signed out");
+  }
+
   static Future<bool> loginUser(
       BuildContext context, String email, String password) async {
     try {
@@ -51,6 +82,7 @@ class AuthFunctionality {
       Navigator.push(context, MaterialPageRoute(builder: (_) {
         return ProjectSelectionScreen();
       }));
+      prefs?.setString("auth", userCredential.user?.uid ?? "");
       SnackBarHelper.showSnackBar(
           context, 'Login successful: ${userCredential.user!.uid}');
       print('Login successful: ${userCredential.user!.uid}');
@@ -88,6 +120,46 @@ class AuthFunctionality {
     } catch (e) {
       SnackBarHelper.showSnackBar(context, e.toString());
       // Handle errors during password reset.
+    }
+  }
+
+  // Perform Facebook login
+  static Future<void> signInWithFacebook() async {
+    try {
+      final result = await FacebookAuth.instance.login();
+
+      // Check if the login was successful
+      if (result.status == LoginStatus.success) {
+        // Retrieve the access token
+        final accessToken = result.accessToken!.token;
+
+        // Authenticate the user with Firebase
+        final AuthCredential credential =
+            FacebookAuthProvider.credential(accessToken);
+
+        // Sign in with Firebase using the credential
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        // Check if the user is new or existing
+        final User? user = userCredential.user;
+        final bool isUserNew =
+            userCredential.additionalUserInfo?.isNewUser ?? false;
+
+        // Perform further actions based on whether the user is new or existing
+        if (isUserNew) {
+          // User is new, perform registration logic
+          // ...
+        } else {
+          // User is existing, perform login logic
+          // ...
+        }
+      } else {
+        // Login failed
+        print('Facebook login failed');
+      }
+    } catch (e) {
+      print('Error signing in with Facebook: $e');
     }
   }
 }

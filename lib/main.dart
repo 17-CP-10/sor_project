@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spotonresponse/view/screens/authentication/auth_screen.dart';
+import 'package:spotonresponse/view/screens/home_screen/home_screen.dart';
+import 'package:spotonresponse/view/screens/project_selection/project_selection_screen.dart';
 
 // Obtain shared preferences.
 SharedPreferences? prefs;
@@ -48,7 +50,9 @@ class MyApp extends StatelessWidget {
                 highlightColor: Colors.transparent,
                 focusColor: Colors.transparent,
                 splashColor: Colors.transparent),
-            home: const AuthScreen(),
+            home: prefs?.getString("auth") == null
+                ? const AuthScreen()
+                : const ProjectSelectionScreen(),
           );
         });
   }

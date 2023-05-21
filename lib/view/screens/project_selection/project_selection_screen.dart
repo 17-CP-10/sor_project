@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:spotonresponse/main.dart';
 
 import '../../../data/assets_path.dart';
 import '../home_screen/home_screen.dart';
@@ -90,6 +91,7 @@ class _ProjectSelectionScreenState extends State<ProjectSelectionScreen> {
                         ),
                         trailing: InkWell(
                           onTap: () {
+                            // prefs?.clear();
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (_) {
                               return HomeScreen();
