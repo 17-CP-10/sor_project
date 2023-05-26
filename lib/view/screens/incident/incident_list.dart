@@ -13,7 +13,7 @@ import 'incident_details.dart';
 
 class IncidentList extends StatefulWidget {
   ProjectDetails projectDetails;
-  IncidentList({super.key,required this.projectDetails});
+  IncidentList({super.key, required this.projectDetails});
 
   @override
   State<IncidentList> createState() => _IncidentListState();
@@ -22,14 +22,14 @@ class IncidentList extends StatefulWidget {
 class _IncidentListState extends State<IncidentList> {
   int selectedIndex = 0;
   bool loading = true;
-  IncidentListModel? projectListModel;
+  IncidentListModel? incidentListModel;
   getIncidentList() {
     Future.delayed(Duration(milliseconds: 500), () async {
       await UserApi.getIncidentList().then((value) {
         if (value != null) {
           setState(() {
             loading = false;
-            projectListModel = value;
+            incidentListModel = value;
           });
         }
       });
@@ -51,148 +51,168 @@ class _IncidentListState extends State<IncidentList> {
         appBar: AppBar(
           foregroundColor: Colors.grey,
           title: Text(
-            "Project ID : 127",
+            "Project ID : ${widget.projectDetails.projectid ?? 0}",
             style: TextStyle(color: Colors.grey),
           ),
           backgroundColor: Colors.white,
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              ImagesPath.sorIcon,
-              fit: BoxFit.fill,
-              width: width,
-              height: 60.h,
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Text(
-              "Project ID : ${widget.projectDetails.projectid ?? 0} ",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18.sp,
-                // fontWeight: FontWeight.bold,
+        body: loading
+            ? Center(child: CircularProgressIndicator())
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    ImagesPath.sorIcon,
+                    fit: BoxFit.fill,
+                    width: width,
+                    height: 60.h,
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Text(
+                    "Project ID : ${widget.projectDetails.projectid ?? 0} ",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.sp,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Expanded(
+                      child: incidentListModel?.incidents?.isEmpty == true ||
+                              incidentListModel == null
+                          ? const Center(
+                              child: Text("No Incident Found"),
+                            )
+                          : ListView.separated(
+                              separatorBuilder: (context, index) {
+                                return Container(
+                                  height: 1.h,
+                                  color: Colors.black,
+                                );
+                              },
+                              itemCount:
+                                  incidentListModel?.incidents?.length ?? 0,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex = index;
+                                    });
+                                  },
+                                  child: ListTile(
+                                    tileColor: selectedIndex == index
+                                        ? Colors.grey.shade300
+                                        : Colors.transparent,
+                                    leading: Image.asset(
+                                        "assets/icons/png/home-mystatus-icon.png"),
+                                    title: Text(
+                                      incidentListModel
+                                              ?.incidents?[index].name ??
+                                          "",
+                                      style: TextStyle(
+                                          fontSize: 18.sp,
+                                          color: selectedIndex == index
+                                              ? Colors.black
+                                              : Colors.grey),
+                                    ),
+                                    subtitle: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "When : ",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: selectedIndex == index
+                                                      ? Colors.black
+                                                      : Colors.grey),
+                                            ),
+                                            Text(
+                                              incidentListModel
+                                                      ?.incidents?[index]
+                                                      .created ??
+                                                  "",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: selectedIndex == index
+                                                      ? Colors.black
+                                                      : Colors.grey),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Created By : ",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: selectedIndex == index
+                                                      ? Colors.black
+                                                      : Colors.grey),
+                                            ),
+                                            Text(
+                                              incidentListModel
+                                                      ?.incidents?[index]
+                                                      .createdBy ??
+                                                  "",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: selectedIndex == index
+                                                      ? Colors.black
+                                                      : Colors.grey),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Distance : ",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: selectedIndex == index
+                                                      ? Colors.black
+                                                      : Colors.grey),
+                                            ),
+                                            Text(
+                                              "${incidentListModel?.incidents?[index].distance ?? ""}KM",
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: selectedIndex == index
+                                                      ? Colors.black
+                                                      : Colors.grey),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: InkWell(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (_) {
+                                          return IncidentDetails(
+                                            incident: incidentListModel
+                                                    ?.incidents?[index] ??
+                                                Incidents(),
+                                          );
+                                        }));
+                                      },
+                                      child: FaIcon(
+                                        FontAwesomeIcons.anglesRight,
+                                        color: selectedIndex == index
+                                            ? Colors.black
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }))
+                ],
               ),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Expanded(
-                child: ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return Container(
-                        height: 1.h,
-                        color: Colors.black,
-                      );
-                    },
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        child: ListTile(
-                          tileColor: selectedIndex == index
-                              ? Colors.grey.shade300
-                              : Colors.transparent,
-                          leading: Image.asset(
-                              "assets/icons/png/home-mystatus-icon.png"),
-                          title: Text(
-                            "Project 1",
-                            style: TextStyle(
-                                fontSize: 18.sp,
-                                color: selectedIndex == index
-                                    ? Colors.black
-                                    : Colors.grey),
-                          ),
-                          subtitle: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    "When : ",
-                                    style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: selectedIndex == index
-                                            ? Colors.black
-                                            : Colors.grey),
-                                  ),
-                                  Text(
-                                    "16/05/2023",
-                                    style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: selectedIndex == index
-                                            ? Colors.black
-                                            : Colors.grey),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Created By : ",
-                                    style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: selectedIndex == index
-                                            ? Colors.black
-                                            : Colors.grey),
-                                  ),
-                                  Text(
-                                    "Amjad Ali",
-                                    style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: selectedIndex == index
-                                            ? Colors.black
-                                            : Colors.grey),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Distance : ",
-                                    style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: selectedIndex == index
-                                            ? Colors.black
-                                            : Colors.grey),
-                                  ),
-                                  Text(
-                                    "20KM",
-                                    style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: selectedIndex == index
-                                            ? Colors.black
-                                            : Colors.grey),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          trailing: InkWell(
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) {
-                                return IncidentDetails();
-                              }));
-                            },
-                            child: FaIcon(
-                              FontAwesomeIcons.anglesRight,
-                              color: selectedIndex == index
-                                  ? Colors.black
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ),
-                      );
-                    }))
-          ],
-        ),
       ),
     );
   }

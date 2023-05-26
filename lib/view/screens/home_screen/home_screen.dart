@@ -9,6 +9,7 @@ import 'package:spotonresponse/view/screens/authentication/auth_screen.dart';
 import '../../../data/assets_path.dart';
 import '../../../main.dart';
 import '../incident/incident_list.dart';
+import '../project_selection/project_selection_screen.dart';
 import '../status_map/status_map.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
           foregroundColor: Colors.grey,
-          title: Text(
+          title: const Text(
             "Home",
             style: TextStyle(color: Colors.grey),
           ),
@@ -74,10 +75,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onTap: () {
                     // Handle item 2 tap
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return const ProjectSelectionScreen();
+                    }));
                   },
                 ),
                 ListTile(
-                  trailing: FaIcon(
+                  trailing: const FaIcon(
                     FontAwesomeIcons.rightFromBracket,
                     color: Colors.black,
                   ),
@@ -89,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Handle item 2 tap
                     prefs?.clear();
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return AuthScreen();
+                      return const AuthScreen();
                     }));
                   },
                 ),

@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../data/Models/incident_list_model.dart';
 import 'map_screen.dart';
 
 class IncidentDetails extends StatefulWidget {
-  const IncidentDetails({super.key});
+  Incidents incident;
+  IncidentDetails({super.key, required this.incident});
 
   @override
   State<IncidentDetails> createState() => _IncidentDetailsState();
 }
 
 class _IncidentDetailsState extends State<IncidentDetails> {
+  late GoogleMapController _mapController;
   @override
   void initState() {
     super.initState();
@@ -26,8 +30,8 @@ class _IncidentDetailsState extends State<IncidentDetails> {
       appBar: AppBar(
         foregroundColor: Colors.grey,
         title: Text(
-          "Amjad Ali",
-          style: TextStyle(color: Colors.grey),
+          widget.incident.createdBy ?? "",
+          style: const TextStyle(color: Colors.grey),
         ),
         backgroundColor: Colors.white,
       ),
@@ -36,12 +40,25 @@ class _IncidentDetailsState extends State<IncidentDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
+            // SizedBox(
+            //   height: 200.h,
+            //   width: MediaQuery.of(context).size.width,
+            //   child: Image.asset(
+            //     "assets/icons/png/download.png",
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
+            SizedBox(
               height: 200.h,
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset(
-                "assets/icons/png/download.png",
-                fit: BoxFit.cover,
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(double.parse(widget.incident.lat ?? "20"),
+                      double.parse(widget.incident.lon ?? "20")),
+                  zoom: 15,
+                ),
+                onMapCreated: (GoogleMapController controller) {
+                  _mapController = controller;
+                },
               ),
             ),
             Expanded(
@@ -52,83 +69,83 @@ class _IncidentDetailsState extends State<IncidentDetails> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Code : 123",
+                    "Code : ${widget.incident.code ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Type : 123",
+                    "Type : ${widget.incident.type ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Created : 123",
+                    "Created : ${widget.incident.created ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Reason : 123",
+                    "Reason : ${widget.incident.reason ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Disposition : 123",
+                    "Disposition : ${widget.incident.disposition ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Incident Status : 123",
+                    "Incident Status : ${widget.incident.incidentStatus ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Created By : 123",
+                    "Created By : ${widget.incident.createdBy ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Created By User : 123",
+                    "Created By User : ${widget.incident.createdByUser ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Last Update : 123",
+                    "Last Update : ${widget.incident.lastupdated ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Offline Descriptor : 123",
+                    "Offline Descriptor : ${widget.incident.offlineDescription ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "isSIOI : 123",
+                    "isSIOI : ${widget.incident.isSIOI ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Latitude : 123",
+                    "Latitude : ${widget.incident.lat ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Langitude : 123",
+                    "Langitude : ${widget.incident.lon ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "UUID : 123",
+                    "UUID : ${widget.incident.uUID ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Radius : 123",
+                    "Radius : ${widget.incident.radius ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "State : 123",
+                    "State : ${widget.incident.state ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Count : 123",
+                    "Count : ${widget.incident.count ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Media Count : 123",
+                    "Media Count : ${widget.incident.mediaCount ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Project ID : 123",
+                    "Project ID : ${widget.incident.projectID ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                   Text(
-                    "Incident Project Id : 123",
+                    "Incident Project Id : ${widget.incident.incidentProjID ?? ""}",
                     style: TextStyle(fontSize: 16.sp),
                   ),
                 ],
