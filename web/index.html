@@ -40,6 +40,47 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+     <!-- The core Firebase JS SDK (always required for using any Firebase service) -->
+     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+     <!-- Firebase Auth SDK -->
+     <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
+     <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : "1:846251353817:web:1a0967d9237177b88540c8",
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v16.0'
+        });
+          
+        FB.AppEvents.logPageView();   
+      };
+      FB.getLoginStatus(function(response) {
+       statusChangeCallback(response);
+      });
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+     <script>
+       // Your web app's Firebase configuration
+       var firebaseConfig = {
+            apiKey: "AIzaSyC_QptCcFcGBchdYmF6IQLRtiUK2wNOl1c",
+            authDomain: "sor-project-387015.firebaseapp.com",
+            projectId: "sor-project-387015",
+            storageBucket: "sor-project-387015.appspot.com",
+            messagingSenderId: "846251353817",
+            appId: "1:846251353817:web:1a0967d9237177b88540c8",
+            measurementId: "G-45MMBG5BJ6",
+       }
+       // Initialize Firebase
+       firebase.initializeApp(firebaseConfig)
+     </script>
+     <!-- END OF FIREBASE INIT CODE -->
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

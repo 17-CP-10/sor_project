@@ -3,14 +3,17 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:spotonresponse/data/Models/project_list_model.dart';
 import 'package:spotonresponse/view/screens/authentication/auth_screen.dart';
 
 import '../../../data/assets_path.dart';
+import '../../../main.dart';
 import '../incident/incident_list.dart';
 import '../status_map/status_map.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  ProjectDetails projectDetails;
+  HomeScreen({super.key, required this.projectDetails});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _openDrawer() {
@@ -47,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 ListTile(
-                  trailing: FaIcon(
+                  trailing: const FaIcon(
                     FontAwesomeIcons.xmark,
                     color: Colors.black,
                   ),
@@ -60,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 ListTile(
-                  trailing: FaIcon(
+                  trailing: const FaIcon(
                     FontAwesomeIcons.fileCircleCheck,
                     color: Colors.black,
                   ),
@@ -83,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onTap: () {
                     // Handle item 2 tap
+                    prefs?.clear();
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
                       return AuthScreen();
                     }));
@@ -109,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Project ID : 127 ",
+                    "Project ID : ${widget.projectDetails.projectid ?? 0} ",
                     style: TextStyle(fontSize: 18.sp, color: Colors.black),
                   ),
                   InkWell(
@@ -164,7 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
               setState(() {
                 selectedIndex = 1;
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return IncidentList();
+                  return IncidentList(
+                    projectDetails: widget.projectDetails,
+                  );
                 }));
               });
             },

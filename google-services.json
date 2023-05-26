@@ -7,35 +7,35 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:846251353817:android:8c86a6df6929e9bb8540c8",
+        "mobilesdk_app_id": "1:846251353817:android:8f4ba8a9838037688540c8",
         "android_client_info": {
-          "package_name": "com.example.spotonresponse"
+          "package_name": "com.sorproject.spotonresponse"
         }
       },
       "oauth_client": [
         {
-          "client_id": "846251353817-raki2s8q1pt80k2ja2gka6u7d10frp9m.apps.googleusercontent.com",
+          "client_id": "846251353817-csd2qihd63jfbaeqappmbm3g5842lnrd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.spotonresponse",
+            "package_name": "com.sorproject.spotonresponse",
             "certificate_hash": "e64db43f2043bfac6e99261bf646187ddffe6941"
           }
         },
         {
-          "client_id": "846251353817-dn5ipnhi3lhvfbol72k704j1a5ht9lv1.apps.googleusercontent.com",
+          "client_id": "846251353817-c7jcpuo1qicnnki4bcf7onq0tiqpqtpa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC1priKj6uaNSwC65gSVBOwq2joxKkDwBQ"
+          "current_key": "AIzaSyC40yfuyDGjIfHB_R4bYgXnV7Jhr-gQhSk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "846251353817-dn5ipnhi3lhvfbol72k704j1a5ht9lv1.apps.googleusercontent.com",
+              "client_id": "846251353817-c7jcpuo1qicnnki4bcf7onq0tiqpqtpa.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

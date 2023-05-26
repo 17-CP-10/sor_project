@@ -11,6 +11,7 @@ import 'package:spotonresponse/data/assets_path.dart';
 import 'package:spotonresponse/view/screens/authentication/auth_functionality.dart';
 import 'package:spotonresponse/view/screens/project_selection/project_selection_screen.dart';
 
+import '../../../main.dart';
 import '../forgot_password/forgot_password.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -262,14 +263,34 @@ class _AuthScreenState extends State<AuthScreen> {
                           if (emailController.text.isNotEmpty &&
                               passwordController.text.isNotEmpty) {
                             if (isLogin && nameController.text.isEmpty) {
-                              isLoading = await AuthFunctionality.loginUser(
+                              await AuthFunctionality.loginUser(
                                       context,
                                       emailController.text.trim(),
                                       passwordController.text.trim())
                                   .then((value) {
-                                return false;
+                                if (value != null) {
+                                  value.user?.getIdToken().then((value1) {
+                                    value.user
+                                        ?.getIdTokenResult()
+                                        .then((value2) {
+                                      prefs?.setString("sessionId", value1);
+                                      FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(value.user?.uid ?? "")
+                                          .update({
+                                        "sessionId": value1,
+                                        "createdSessionDate": DateTime.now(),
+                                        "expireSessionDate":
+                                            value2.expirationTime,
+                                        "uid": value.user?.uid ?? "",
+                                      }).then((value) {
+                                        isLoading = false;
+                                        setState(() {});
+                                      });
+                                    });
+                                  });
+                                }
                               });
-                              setState(() {});
                             } else {
                               await AuthFunctionality.registerUser(
                                       context,
@@ -277,18 +298,30 @@ class _AuthScreenState extends State<AuthScreen> {
                                       passwordController.text.trim())
                                   .then((value) {
                                 if (value != null) {
-                                  FirebaseFirestore.instance
-                                      .collection("users")
-                                      .add({
-                                    "uid": value.user?.uid ?? "",
-                                    "name": nameController.text,
-                                    "email": emailController.text.trim(),
-                                  }).whenComplete(() {
-                                    isLoading = false;
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (_) {
-                                      return const ProjectSelectionScreen();
-                                    }));
+                                  value.user?.getIdToken().then((value1) {
+                                    value.user
+                                        ?.getIdTokenResult()
+                                        .then((value2) {
+                                      prefs?.setString("sessionId", value1);
+                                      FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(value.user?.uid ?? "")
+                                          .set({
+                                        "sessionId": value1,
+                                        "createdSessionDate": DateTime.now(),
+                                        "expireSessionDate":
+                                            value2.expirationTime,
+                                        "uid": value.user?.uid ?? "",
+                                        "name": nameController.text,
+                                        "email": emailController.text.trim(),
+                                      }).whenComplete(() {
+                                        isLoading = false;
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (_) {
+                                          return const ProjectSelectionScreen();
+                                        }));
+                                      });
+                                    });
                                   });
                                 }
                               });
@@ -334,26 +367,59 @@ class _AuthScreenState extends State<AuthScreen> {
                           await AuthFunctionality.signInWithGoogle()
                               .then((value) {
                             try {
-                              if (value.additionalUserInfo?.isNewUser == true) {
-                                FirebaseFirestore.instance
-                                    .collection("users")
-                                    .add({
-                                  "uid": value.user?.uid ?? "",
-                                  "name": value.user?.displayName ?? "",
-                                  "email": value.user?.email ?? "",
-                                }).whenComplete(() {
-                                  isLoading = false;
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (_) {
-                                    return const ProjectSelectionScreen();
-                                  }));
-                                });
-                              } else {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) {
-                                  return const ProjectSelectionScreen();
-                                }));
-                              }
+                              value.user?.getIdToken().then((value1) {
+                                    value.user
+                                        ?.getIdTokenResult()
+                                        .then((value2) {
+                                      if (value.additionalUserInfo?.isNewUser ==
+                                          true) {
+                                        prefs?.setString("sessionId", value1);
+                                        FirebaseFirestore.instance
+                                            .collection("users")
+                                            .doc(value.user?.uid ?? "")
+                                            .set({
+                                          "sessionId": value1,
+                                          "createdSessionDate": DateTime.now(),
+                                          "expireSessionDate":
+                                              value2.expirationTime,
+                                          "uid": value.user?.uid ?? "",
+                                          "name": value.user?.displayName ?? "",
+                                          "email": value.user?.email ?? "",
+                                        }).whenComplete(() {
+                                          isLoading = false;
+                                          Navigator.push(context,
+                                              MaterialPageRoute(builder: (_) {
+                                            return const ProjectSelectionScreen();
+                                          }));
+                                        }).catchError((e) {
+                                          print(e.toString());
+                                        });
+                                      } else {
+                                        prefs?.setString("sessionId", value1);
+                                        FirebaseFirestore.instance
+                                            .collection("users")
+                                            .doc(value.user?.uid ?? "")
+                                            .set({
+                                          "sessionId": value1,
+                                          "createdSessionDate": DateTime.now(),
+                                          "expireSessionDate":
+                                              value2.expirationTime,
+                                          "uid": value.user?.uid ?? "",
+                                          "name": value.user?.displayName ?? "",
+                                          "email": value.user?.email ?? "",
+                                        }).whenComplete(() {
+                                          isLoading = false;
+                                          Navigator.push(context,
+                                              MaterialPageRoute(builder: (_) {
+                                            return const ProjectSelectionScreen();
+                                          }));
+                                        }).catchError((e) {
+                                          print(e.toString());
+                                        });
+                                      }
+                                    });
+                                  }) ??
+                                  "";
                             } catch (e) {
                               developer.log(e.toString());
                             }
@@ -375,7 +441,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       InkWell(
                         onTap: () async {
-                          await AuthFunctionality.signInWithFacebook();
+                          await AuthFunctionality.signInWithFacebook(context);
                         },
                         child: CircleAvatar(
                           radius: 24.r,

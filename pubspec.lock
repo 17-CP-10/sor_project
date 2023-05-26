@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.4"
+  firebase:
+    dependency: "direct main"
+    description:
+      name: firebase
+      sha256: cbff777369d19bd0535ccca0005518172953394246620ff8c1021072299d452d
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.3"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -313,7 +321,7 @@ packages:
     source: hosted
     version: "2.4.0"
   google_sign_in_web:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: google_sign_in_web
       sha256: "7e0ec507f4752383a6daa67d0cc775253cfc3b1d87907e7004e2c1b99c0a723f"
@@ -321,7 +329,7 @@ packages:
     source: hosted
     version: "0.12.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"

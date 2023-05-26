@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spotonresponse/view/screens/authentication/auth_screen.dart';
@@ -14,9 +15,15 @@ SharedPreferences? prefs;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
-  if (Platform.isAndroid || Platform.isIOS) {
+  if (!kIsWeb) {
     await Firebase.initializeApp();
   } else {
+    await FacebookAuth.instance.webAndDesktopInitialize(
+      appId: "1:846251353817:web:1a0967d9237177b88540c8",
+      cookie: true,
+      xfbml: true,
+      version: "v16.0",
+    );
     await Firebase.initializeApp(
         options: const FirebaseOptions(
             apiKey: "AIzaSyC_QptCcFcGBchdYmF6IQLRtiUK2wNOl1c",
@@ -27,8 +34,6 @@ Future<void> main() async {
             appId: "1:846251353817:web:1a0967d9237177b88540c8",
             measurementId: "G-45MMBG5BJ6"));
   }
-
-  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

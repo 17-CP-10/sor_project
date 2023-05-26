@@ -4,6 +4,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:spotonresponse/data/Models/project_list_model.dart';
+import 'package:spotonresponse/data/UserApi/user_api.dart';
 import 'package:spotonresponse/main.dart';
 
 import '../../../data/assets_path.dart';
@@ -17,6 +19,27 @@ class ProjectSelectionScreen extends StatefulWidget {
 }
 
 class _ProjectSelectionScreenState extends State<ProjectSelectionScreen> {
+  bool loading = true;
+  ProjectListModel? projectListModel;
+  @override
+  void initState() {
+    getProjectList();
+    super.initState();
+  }
+
+  getProjectList() {
+    Future.delayed(Duration(milliseconds: 500), () async {
+      await UserApi.fetchProjects().then((value) {
+        if (value != null) {
+          setState(() {
+            loading = false;
+            projectListModel = value;
+          });
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -48,62 +71,79 @@ class _ProjectSelectionScreenState extends State<ProjectSelectionScreen> {
               height: 10.h,
             ),
             Expanded(
-                child: ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 50.w),
-                        child: Container(
-                          height: 1.h,
-                          color: Colors.black,
-                        ),
-                      );
-                    },
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Row(
-                          children: [
-                            Text(
-                              "Project ID : ",
-                              style: TextStyle(
-                                  fontSize: 18.sp, color: Colors.grey),
-                            ),
-                            Text(
-                              "56",
-                              style: TextStyle(
-                                  fontSize: 18.sp, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Text(
-                              "Project Name : ",
-                              style: TextStyle(
-                                  fontSize: 18.sp, color: Colors.grey),
-                            ),
-                            Text(
-                              "CPUC",
-                              style: TextStyle(
-                                  fontSize: 18.sp, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                        trailing: InkWell(
-                          onTap: () {
-                            // prefs?.clear();
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (_) {
-                              return HomeScreen();
-                            }));
-                          },
-                          child: const FaIcon(
-                            FontAwesomeIcons.arrowRight,
-                            color: Colors.black,
-                          ),
-                        ),
-                      );
-                    }))
+                child: loading
+                    ? Center(child: CircularProgressIndicator())
+                    : projectListModel?.data?.isEmpty == true ||
+                            projectListModel == null
+                        ? Center(
+                            child: Text("No project found "),
+                          )
+                        : ListView.separated(
+                            separatorBuilder: (context, index) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 50.w),
+                                child: Container(
+                                  height: 1.h,
+                                  color: Colors.black,
+                                ),
+                              );
+                            },
+                            itemCount: projectListModel?.data?.length ?? 0,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      "Project ID : ",
+                                      style: TextStyle(
+                                          fontSize: 18.sp, color: Colors.grey),
+                                    ),
+                                    Text(
+                                      "${projectListModel?.data?[index].projectid ?? 0}",
+                                      style: TextStyle(
+                                          fontSize: 18.sp, color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                subtitle: Row(
+                                  children: [
+                                    Text(
+                                      "Project Name : ",
+                                      style: TextStyle(
+                                          fontSize: 18.sp, color: Colors.grey),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        "${projectListModel?.data?[index].name ?? ""}",
+                                        maxLines: 1,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: 18.sp,
+                                            overflow: TextOverflow.ellipsis,
+                                            color: Colors.black),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: InkWell(
+                                  onTap: () {
+                                    // prefs?.clear();
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (_) {
+                                      return HomeScreen(
+                                        projectDetails:
+                                            projectListModel?.data?[index] ??
+                                                ProjectDetails(),
+                                      );
+                                    }));
+                                  },
+                                  child: const FaIcon(
+                                    FontAwesomeIcons.arrowRight,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              );
+                            }))
           ],
         ),
       ),

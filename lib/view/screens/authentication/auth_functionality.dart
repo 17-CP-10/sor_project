@@ -1,16 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:spotonresponse/main.dart';
-
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import '../../widgets/snack_bar.dart';
 import '../project_selection/project_selection_screen.dart';
 import 'auth_screen.dart';
 
 class AuthFunctionality {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  static final GoogleSignIn _googleSignIn = GoogleSignIn();
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
+      clientId:
+          "846251353817-c7jcpuo1qicnnki4bcf7onq0tiqpqtpa.apps.googleusercontent.com");
 
   static Future<UserCredential?> registerUser(
       BuildContext context, String email, String password) async {
@@ -71,7 +74,7 @@ class AuthFunctionality {
     print("User signed out");
   }
 
-  static Future<bool> loginUser(
+  static Future<UserCredential?> loginUser(
       BuildContext context, String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -86,7 +89,7 @@ class AuthFunctionality {
       SnackBarHelper.showSnackBar(
           context, 'Login successful: ${userCredential.user!.uid}');
       print('Login successful: ${userCredential.user!.uid}');
-      return true;
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         SnackBarHelper.showSnackBar(context, 'No user found for that email.');
@@ -99,11 +102,11 @@ class AuthFunctionality {
       // Handle other FirebaseAuthException errors.
       print(e.message);
       SnackBarHelper.showSnackBar(context, e.message.toString());
-      return false;
+      return null;
     } catch (e) {
       SnackBarHelper.showSnackBar(context, e.toString());
       print(e.toString());
-      return false;
+      return null;
     }
   }
 
@@ -124,18 +127,19 @@ class AuthFunctionality {
   }
 
   // Perform Facebook login
-  static Future<void> signInWithFacebook() async {
+  static Future<void> signInWithFacebook(BuildContext context) async {
     try {
-      final result = await FacebookAuth.instance.login();
+      final result = await FacebookAuth.instance
+          .login(permissions: ["email", "public_profile"]);
 
       // Check if the login was successful
       if (result.status == LoginStatus.success) {
         // Retrieve the access token
-        final accessToken = result.accessToken!.token;
+        final accessToken = result.accessToken?.token;
 
         // Authenticate the user with Firebase
         final AuthCredential credential =
-            FacebookAuthProvider.credential(accessToken);
+            FacebookAuthProvider.credential(accessToken ?? "");
 
         // Sign in with Firebase using the credential
         final UserCredential userCredential =
@@ -148,7 +152,27 @@ class AuthFunctionality {
 
         // Perform further actions based on whether the user is new or existing
         if (isUserNew) {
-          // User is new, perform registration logic
+          userCredential.user?.getIdToken().then((value1) {
+            userCredential.user?.getIdTokenResult().then((value2) {
+              prefs?.setString("sessionId", value1);
+              FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(userCredential.user?.uid ?? "")
+                  .set({
+                "sessionId": value1,
+                "createdSessionDate": DateTime.now(),
+                "expireSessionDate": value2.expirationTime,
+                "uid": userCredential.user?.uid ?? "",
+                "name": userCredential.user?.displayName ?? "",
+                "email": userCredential.user?.email ?? "",
+              }).whenComplete(() {
+                Navigator.push(context, MaterialPageRoute(builder: (_) {
+                  return const ProjectSelectionScreen();
+                }));
+              });
+            });
+          });
+
           // ...
         } else {
           // User is existing, perform login logic

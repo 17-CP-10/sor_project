@@ -1,4 +1,4 @@
-package com.example.spotonresponse
+package com.sorproject.spotonresponse
 
 import io.flutter.embedding.android.FlutterActivity
 

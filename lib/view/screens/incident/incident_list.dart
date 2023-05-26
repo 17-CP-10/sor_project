@@ -3,13 +3,17 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:spotonresponse/data/Models/project_list_model.dart';
 
+import '../../../data/Models/incident_list_model.dart';
+import '../../../data/UserApi/user_api.dart';
 import '../../../data/assets_path.dart';
 import '../home_screen/home_screen.dart';
 import 'incident_details.dart';
 
 class IncidentList extends StatefulWidget {
-  const IncidentList({super.key});
+  ProjectDetails projectDetails;
+  IncidentList({super.key,required this.projectDetails});
 
   @override
   State<IncidentList> createState() => _IncidentListState();
@@ -17,6 +21,27 @@ class IncidentList extends StatefulWidget {
 
 class _IncidentListState extends State<IncidentList> {
   int selectedIndex = 0;
+  bool loading = true;
+  IncidentListModel? projectListModel;
+  getIncidentList() {
+    Future.delayed(Duration(milliseconds: 500), () async {
+      await UserApi.getIncidentList().then((value) {
+        if (value != null) {
+          setState(() {
+            loading = false;
+            projectListModel = value;
+          });
+        }
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    getIncidentList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -45,7 +70,7 @@ class _IncidentListState extends State<IncidentList> {
               height: 10.h,
             ),
             Text(
-              "Project ID : 127 ",
+              "Project ID : ${widget.projectDetails.projectid ?? 0} ",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18.sp,
